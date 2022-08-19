@@ -73,7 +73,7 @@ if __name__ == "__main__":
     parser.add_argument("--policy_freq", default=2, type=int)  # Frequency of delayed policy updates
     parser.add_argument("--save_model", action="store_true")  # Save model and optimizer parameters
     parser.add_argument("--load_model", default="")  # Model load file name, "" doesn't load, "default" uses file_name
-    parser.add_argument("--aux_task", default="ofe") # auxiliary task for ofenet from fsp, fsdp, rwp
+    parser.add_argument("--aux_task", default="fsp") # auxiliary task for ofenet from fsp, fsdp, rwp
     parser.add_argument("--total_units", default=240, type=int) # total units for learned representations
     parser.add_argument("--wandb_name", default="off") # wandb project name
     parser.add_argument("--wandb_entity", default=None) # wandb project entity
