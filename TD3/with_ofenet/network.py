@@ -56,7 +56,7 @@ class OFENet(nn.Module):
         self._dim_state_features = total_units + dim_state
         self._dim_state_action_features = total_units + dim_state + dim_action + total_units
 
-        # self.eps = 1e-10
+        self.eps = 1e-10
 
         # some metrics of the representations
         self.mae_train = 0
@@ -133,6 +133,64 @@ class OFENet(nn.Module):
         self.optimizer.zero_grad(set_to_none=True)
         feature_loss.backward()
         self.optimizer.step()
+
+
+    def test_ofe(self, states, actions, next_states, rewards, dones):
+        target_dim = self.dim_output
+
+        # actions = th.FloatTensor(actions).cuda()
+        # actions = th.unsqueeze(actions, 0)
+        # states = th.FloatTensor(states).cuda()
+        # states = th.unsqueeze(states, 0)
+        # next_states = th.FloatTensor(next_states).cuda()
+        # next_states = th.unsqueeze(next_states, 0)
+        # Standard aux task
+        with th.no_grad():
+            if self.aux_task == "fsp":
+                predicted_states = self([states, actions])
+                target_states = next_states[:, :target_dim].cuda()
+                feature_loss = th.mean((target_states - predicted_states) ** 2)
+
+                mae = th.mean(th.abs(target_states - predicted_states))
+                mae_percent = th.abs(mae / th.mean(target_states))
+                mape = th.mean(th.abs((target_states - predicted_states) / (target_states + self.eps)))
+                mse = feature_loss
+                mse_percent = mse / th.mean(target_states**2)
+                mspe = th.mean(((target_states - predicted_states) / (target_states + self.eps)) ** 2)
+
+            ### Anderson aux task
+            elif self.aux_task == "fsdp":
+                predicted_states_diff = self([states, actions])
+                target_states = next_states[:, :target_dim].cuda()
+                target_states_diff = target_states - states[:, :target_dim].cuda()  # Andersons AddOn
+                feature_loss = th.mean((target_states_diff - predicted_states_diff) ** 2)
+
+                mae = th.mean(th.abs(target_states_diff - predicted_states_diff))
+                mae_percent = th.abs(mae / th.mean(target_states_diff))
+                mape = th.mean(th.abs((target_states_diff - predicted_states_diff) / (target_states_diff + self.eps)))
+                mse = feature_loss
+                mse_percent = mse / th.mean(target_states_diff**2)
+                mspe = th.mean(((target_states_diff - predicted_states_diff) / (target_states_diff + self.eps)) ** 2)
+
+            ### Reward Prediction Model
+            elif self.aux_task == "rwp":
+                target_rewards = rewards
+                predicted_rewards = self([states, actions]).cuda()
+                feature_loss = th.mean((target_rewards - predicted_rewards) ** 2)
+
+                mae = th.mean(th.abs(target_rewards - predicted_rewards))
+                mae_percent = th.abs(mae / th.mean(target_rewards))
+                mape = th.mean(th.abs((target_rewards - predicted_rewards) / (target_rewards + self.eps)))
+                mse = feature_loss
+                mse_percent = mse / th.mean(target_rewards**2)
+                mspe = th.mean(((target_rewards - predicted_rewards) / (target_rewards + self.eps)) ** 2)
+
+        self.mae_test = mae
+        self.mae_percent_test = mae_percent
+        self.mape_test = mape
+        self.mse_test = mse
+        self.mse_percent_test = mse_percent
+        self.mspe_test = mspe
 
 
 def calculate_layer_units(state_dim, action_dim, total_units, num_layers):

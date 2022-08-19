@@ -41,7 +41,7 @@ def eval_policy(policy, env_name, seed, extractor, eval_episodes=10):
             counter += 1
 
     sample_state, sample_action, sample_next_state, sample_reward, sample_done = replay_buffer_eval.sample(batch_size=counter)
-    # extractor.test_ofe(sample_state, sample_action, sample_next_state, sample_reward, sample_done)
+    extractor.test_ofe(sample_state, sample_action, sample_next_state, sample_reward, sample_done)
     avg_reward /= eval_episodes
 
     extractor.state_model.train()
