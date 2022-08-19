@@ -99,7 +99,7 @@ class Workspace(object):
                 "seed": self.cfg.seed,
                 "batch_size": batch_size,
             }
-            wandb.init(project=self.cfg.wandb_name, entity="nokryst", config=config)
+            wandb.init(project=self.cfg.wandb_name, entity=self.cfg.wandb_entity, config=config)
 
         eval_flag = False
         while self.step < self.cfg.num_train_steps:

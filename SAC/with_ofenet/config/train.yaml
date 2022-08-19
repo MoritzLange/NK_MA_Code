@@ -5,6 +5,7 @@ env: HalfCheetah-v2
 aux_task: fsp # choose the aux_task for ofenet
 num_pretrain: 10000 # pretrain amount
 wandb_name: unnamed # wandb-project name
+wandb_entity: None # wandb team or user
 freeze_ofe: off # 
 pretrain: on # turn pretraining of ofenet on or off
 total_units: 240 # total units added to representation per ofenet block

@@ -105,7 +105,7 @@ class Workspace(object):
                 "seed": self.cfg.seed,
                 "batch_size": batch_size,
             }
-            wandb.init(project=self.cfg.wandb_name, entity="nokryst", config=config)
+            wandb.init(project=self.cfg.wandb_name, entity=self.cfg.wandb_entity, config=config)
 
         self.agent.pretrain_ofe(self.env, self.replay_buffer, random_collect=self.cfg.num_pretrain, batch_size=batch_size)
 

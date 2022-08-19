@@ -15,6 +15,7 @@ python main.py \\
 	--pretrain_steps	\\
 	--total_units		\\
 	--wandb_name		\\
+	--wandb_entity   \\
 	--seed			\\
 	
 Exemplary Run, when no wandb_name is specified wandb (Weights&Biases, https://www.wandb.com/) is not used at all:

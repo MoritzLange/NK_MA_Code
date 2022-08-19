@@ -76,6 +76,7 @@ if __name__ == "__main__":
     parser.add_argument("--aux_task", default="ofe") # auxiliary task for ofenet from fsp, fsdp, rwp
     parser.add_argument("--total_units", default=240, type=int) # total units for learned representations
     parser.add_argument("--wandb_name", default="off") # wandb project name
+    parser.add_argument("--wandb_entity", default=None) # wandb project entity
     parser.add_argument("--learning_rate", default="3e-4", type=float) # learning rate for TD3
     args = parser.parse_args()
 
@@ -156,7 +157,7 @@ if __name__ == "__main__":
             "learning_rate": args.learning_rate,
         }
 
-        wandb.init(project=args.wandb_name, entity="nokryst", config=config)
+        wandb.init(project=args.wandb_name, entity=args.wandb_entity, config=config)
 
     for t in range(int(args.max_timesteps)):
 
