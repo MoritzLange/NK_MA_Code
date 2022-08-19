@@ -72,6 +72,7 @@ dependencies:
     - mujoco-py==2.1.2.14
     - oauthlib==3.1.1
     - omegaconf==1.4.1
+    - patchelf==0.15.0.0
     - pathtools==0.1.2
     - pillow==8.4.0
     - progress==1.6
