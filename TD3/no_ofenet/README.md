@@ -17,5 +17,6 @@ Exemplary Run, when no wandb_name is specified wandb (Weights&Biases, https://ww
 python main.py \
 	--env=Humanoid-v2 \
 	--max_timesteps=3000000 \
+	--device=cuda \
 	--seed=0
 	

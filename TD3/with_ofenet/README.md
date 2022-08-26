@@ -27,6 +27,7 @@ python main.py \
 	--aux_task=fsp \
 	--pretrain_steps=10000 \
 	--total_units=240 \
+	--device=cuda \
 	--seed=0
 	
 
