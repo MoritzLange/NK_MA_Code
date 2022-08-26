@@ -7,6 +7,7 @@ How to use and possible input parameters:
 python main.py \\
 	--env	\\
 	--max_timesteps	\\
+	--device       \\
 	--wandb_name		\\
 	--wandb_entity   \\
 	--seed			\\

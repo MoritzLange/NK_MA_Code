@@ -14,10 +14,10 @@ import sys
 
 
 class OFENet(nn.Module):
-    def __init__(self, dim_state, dim_action, dim_output, total_units, num_layers, aux_task, env_name, skip_action_branch=False):
+    def __init__(self, dim_state, dim_action, dim_output, total_units, num_layers, aux_task, env_name, device, skip_action_branch=False):
         super().__init__()
 
-        self.device = th.device("cuda" if th.cuda.is_available() else "cpu")
+        self.device = device
 
         # parameters
         self.dim_state = dim_state

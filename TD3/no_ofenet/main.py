@@ -62,8 +62,11 @@ if __name__ == "__main__":
     parser.add_argument("--aux_task", default="no")
     parser.add_argument("--wandb_name", default="off")
     parser.add_argument("--wandb_entity", default=None)
+    parser.add_argument("--device", default="cuda")
     parser.add_argument("--learning_rate", default="3e-4", type=float) # old = 1e-3, new = 3e-4
     args = parser.parse_args()
+
+    device = args.device
 
     env = gym.make(args.env)
     dummy_env = gym.make(args.env)
@@ -83,11 +86,11 @@ if __name__ == "__main__":
 
     ###
 
-    replay_buffer = utils.ReplayBuffer(state_dim, action_dim)
+    replay_buffer = utils.ReplayBuffer(state_dim, action_dim, device=device)
 
     ##
     kwargs = {"state_dim": state_dim, "action_dim": action_dim, "max_action": max_action, "discount": args.discount,
-              "tau": args.tau, "policy_noise": args.policy_noise * max_action,
+              "tau": args.tau, "policy_noise": args.policy_noise * max_action, "device": device,
               "noise_clip": args.noise_clip * max_action, "policy_freq": args.policy_freq, "learning_rate": args.learning_rate}
 
     # Initialize policy

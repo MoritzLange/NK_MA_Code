@@ -75,10 +75,13 @@ if __name__ == "__main__":
     parser.add_argument("--load_model", default="")  # Model load file name, "" doesn't load, "default" uses file_name
     parser.add_argument("--aux_task", default="fsp") # auxiliary task for ofenet from fsp, fsdp, rwp
     parser.add_argument("--total_units", default=240, type=int) # total units for learned representations
+    parser.add_argument("--device", default="cuda")
     parser.add_argument("--wandb_name", default="off") # wandb project name
     parser.add_argument("--wandb_entity", default=None) # wandb project entity
     parser.add_argument("--learning_rate", default="3e-4", type=float) # learning rate for TD3
     args = parser.parse_args()
+
+    device = args.device
 
     env = gym.make(args.env)
 
@@ -114,14 +117,15 @@ if __name__ == "__main__":
         num_layers=num_layers,
         aux_task=args.aux_task,
         env_name=args.env,
-        skip_action_branch=False
+        skip_action_branch=False,
+        device=device
     )
 
-    replay_buffer = utils.ReplayBuffer(state_dim, action_dim)
+    replay_buffer = utils.ReplayBuffer(state_dim, action_dim, device=device)
 
     # kwargs for TD3
     kwargs = {"state_dim": state_dim, "action_dim": action_dim, "max_action": max_action, "discount": args.discount,
-              "tau": args.tau, "ofenet": extractor, "policy_noise": args.policy_noise * max_action,
+              "tau": args.tau, "ofenet": extractor, "policy_noise": args.policy_noise * max_action, "device": device,
               "noise_clip": args.noise_clip * max_action, "policy_freq": args.policy_freq, "learning_rate": args.learning_rate}
 
     # Initialize policy

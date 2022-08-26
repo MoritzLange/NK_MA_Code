@@ -14,6 +14,7 @@ python main.py \\
 	--aux_task		\\
 	--pretrain_steps	\\
 	--total_units		\\
+	--device            \\
 	--wandb_name		\\
 	--wandb_entity   \\
 	--seed			\\
