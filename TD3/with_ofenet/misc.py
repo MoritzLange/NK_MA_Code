@@ -27,7 +27,8 @@ def get_target_dim(env_name):
         "Walker2d-v2": 17,
         "Hopper-v2": 11,
         "Reacher-v2": 11,
-        "Humanoid-v2": 292
+        "Humanoid-v2": 292,
+        "FetchSlideDense-v1": 31
     }
 
     return TARGET_DIM_DICT[env_name]

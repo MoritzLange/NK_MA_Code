@@ -148,7 +148,7 @@ class OFENet(nn.Module):
         with th.no_grad():
             if self.aux_task == "fsp":
                 predicted_states = self([states, actions])
-                target_states = next_states[:, :target_dim].cuda()
+                target_states = next_states[:, :target_dim].to(self.device)
                 feature_loss = th.mean((target_states - predicted_states) ** 2)
 
                 mae = th.mean(th.abs(target_states - predicted_states))
@@ -161,8 +161,8 @@ class OFENet(nn.Module):
             ### Anderson aux task
             elif self.aux_task == "fsdp":
                 predicted_states_diff = self([states, actions])
-                target_states = next_states[:, :target_dim].cuda()
-                target_states_diff = target_states - states[:, :target_dim].cuda()  # Andersons AddOn
+                target_states = next_states[:, :target_dim].to(self.device)
+                target_states_diff = target_states - states[:, :target_dim].to(self.device)  # Andersons AddOn
                 feature_loss = th.mean((target_states_diff - predicted_states_diff) ** 2)
 
                 mae = th.mean(th.abs(target_states_diff - predicted_states_diff))
@@ -175,7 +175,7 @@ class OFENet(nn.Module):
             ### Reward Prediction Model
             elif self.aux_task == "rwp":
                 target_rewards = rewards
-                predicted_rewards = self([states, actions]).cuda()
+                predicted_rewards = self([states, actions]).to(self.device)
                 feature_loss = th.mean((target_rewards - predicted_rewards) ** 2)
 
                 mae = th.mean(th.abs(target_rewards - predicted_rewards))
