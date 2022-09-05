@@ -39,6 +39,7 @@ class Critic(nn.Module):
 		self.l2 = nn.Linear(256, 256)
 		self.l3 = nn.Linear(256, 1)
 
+		# Q2 architecture
 		self.l4 = nn.Linear(sa_dim, 256)
 		self.l5 = nn.Linear(256, 256)
 		self.l6 = nn.Linear(256, 1)

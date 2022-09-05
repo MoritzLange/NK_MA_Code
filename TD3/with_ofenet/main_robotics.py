@@ -34,14 +34,14 @@ class ObservationWrapper(gym.ObservationWrapper):
 
 # Runs policy for X episodes and returns average reward
 # A fixed seed is used for the eval environment
-def eval_policy(policy, env_name, seed, extractor, eval_episodes=100):
+def eval_policy(policy, env_name, seed, extractor, device, eval_episodes=100):
 
     extractor.state_model.eval()
     extractor.action_model.eval()
 
     eval_env = ObservationWrapper(gym.make(env_name))
     eval_env.seed(seed + 100)
-    replay_buffer_eval = utils.ReplayBuffer(state_dim, action_dim)
+    replay_buffer_eval = utils.ReplayBuffer(state_dim, action_dim, device)
 
     avg_reward = 0.
     counter = 0
@@ -157,7 +157,7 @@ if __name__ == "__main__":
     policy = TD3.TD3(**kwargs)
 
     # Evaluate untrained policy
-    avg_rew, sr = eval_policy(policy, args.env, args.seed, extractor)
+    avg_rew, sr = eval_policy(policy, args.env, args.seed, extractor, device)
     evaluations_avg_rew = [avg_rew]
     evaluations_sr = [sr]
 
@@ -264,7 +264,7 @@ if __name__ == "__main__":
 
         # Evaluate episode
         if (t + 1) % args.eval_freq == 0:
-            avg_rew, sr = eval_policy(policy, args.env, args.seed, extractor)
+            avg_rew, sr = eval_policy(policy, args.env, args.seed, extractor, device)
             evaluations_avg_rew.append(avg_rew)
             evaluations_sr.append(sr)
 

@@ -145,6 +145,7 @@ class OFENet(nn.Module):
         # next_states = th.FloatTensor(next_states).cuda()
         # next_states = th.unsqueeze(next_states, 0)
         # Standard aux task
+
         with th.no_grad():
             if self.aux_task == "fsp":
                 predicted_states = self([states, actions])

@@ -18,14 +18,14 @@ import wandb
 
 # Runs policy for X episodes and returns average reward
 # A fixed seed is used for the eval environment
-def eval_policy(policy, env_name, seed, extractor, eval_episodes=10):
+def eval_policy(policy, env_name, seed, extractor, device, eval_episodes=10):
 
     extractor.state_model.eval()
     extractor.action_model.eval()
 
     eval_env = gym.make(env_name)
     eval_env.seed(seed + 100)
-    replay_buffer_eval = utils.ReplayBuffer(state_dim, action_dim)
+    replay_buffer_eval = utils.ReplayBuffer(state_dim, action_dim, device)
 
     avg_reward = 0.
     counter = 0
@@ -43,6 +43,8 @@ def eval_policy(policy, env_name, seed, extractor, eval_episodes=10):
     sample_state, sample_action, sample_next_state, sample_reward, sample_done = replay_buffer_eval.sample(batch_size=counter)
     extractor.test_ofe(sample_state, sample_action, sample_next_state, sample_reward, sample_done)
     avg_reward /= eval_episodes
+    if type(avg_reward) is torch.Tensor:
+        avg_reward = float(avg_reward.detach().cpu().numpy())
 
     extractor.state_model.train()
     extractor.action_model.train()
@@ -64,7 +66,7 @@ if __name__ == "__main__":
     parser.add_argument("--pretrain_steps", default=10e3, type=int) # pretrain steps for ofenet
     parser.add_argument("--eval_freq", default=10e3, type=int)  # How often (time steps) we evaluate
     parser.add_argument("--max_timesteps", default=1e6, type=int)  # Max time steps to run environment
-    parser.add_argument("--expl_noise", default=0.1)  # Std of Gaussian exploration noise
+    parser.add_argument("--expl_noise", default=0.1, type=float)  # Std of Gaussian exploration noise
     parser.add_argument("--batch_size", default=256, type=int)  # Batch size for both actor and critic, old=100, new=256
     parser.add_argument("--discount", default=0.99)  # Discount factor
     parser.add_argument("--tau", default=0.005)  # Target network update rate
@@ -105,7 +107,13 @@ if __name__ == "__main__":
 
     if args.env == "HalfCheetah-v2" or args.env == "Humanoid-v2":
         num_layers = 8
+    elif args.env == "Hopper-v2":
+        num_layers = 6
+    elif args.env == "Pendulum-v1" or args.env == "MountainCarContinuous-v0":
+        num_layers = 2 # before I started logging this, I always used 2 here
     else:
+        # This is just here to preserve default behaviour,
+        # from before I added the elif statements
         num_layers = 6
 
     total_units = args.total_units
@@ -133,7 +141,7 @@ if __name__ == "__main__":
     policy = TD3.TD3(**kwargs)
 
     # Evaluate untrained policy
-    evaluations = [eval_policy(policy, args.env, args.seed, extractor)]
+    evaluations = [eval_policy(policy, args.env, args.seed, extractor, device)]
 
     episode_reward = 0
     episode_timesteps = 0
@@ -159,15 +167,16 @@ if __name__ == "__main__":
             "seed": args.seed,
             "batch_size": args.batch_size,
             "learning_rate": args.learning_rate,
+            "num_layers": num_layers
         }
 
-        wandb.init(project=args.wandb_name, entity=args.wandb_entity, config=config)
+        wandb.init(project=args.wandb_name, entity=args.wandb_entity, config={**config, **vars(args)})
 
     for t in range(int(args.max_timesteps)):
 
         # wandb logging
         if args.wandb_name != "off":
-            if t % 500 == 0:
+            if t % args.eval_freq == 0:
                 wandb_logs = {
                     "Reward": avg_rew,
                     "Step": t,
@@ -228,6 +237,8 @@ if __name__ == "__main__":
 
         if done:
             # +1 to account for 0 indexing. +0 on ep_timesteps since it will increment +1 even if done=True
+            if type(episode_reward) is torch.Tensor:
+                episode_reward = float(episode_reward.detach().cpu().numpy())
             print(
                 f"Total T: {t + 1} Episode Num: {episode_num + 1} Episode T: {episode_timesteps} Reward: {episode_reward:.3f}")
             # Reset environment
@@ -238,6 +249,6 @@ if __name__ == "__main__":
 
         # Evaluate episode
         if (t + 1) % args.eval_freq == 0:
-            avg_rew = eval_policy(policy, args.env, args.seed, extractor)
+            avg_rew = eval_policy(policy, args.env, args.seed, extractor, device)
             evaluations.append(avg_rew)
 
