@@ -88,6 +88,8 @@ class Workspace(object):
         episode, episode_reward, done = 0, 0, True
         batch_size = 256
         episode_step = 0
+        obs = self.env.reset()
+        
         if self.cfg.wandb_name != "unnamed":
             config = {
                 "env_name": self.cfg.env,
@@ -101,7 +103,6 @@ class Workspace(object):
             }
             wandb.init(project=self.cfg.wandb_name, entity=self.cfg.wandb_entity, config={**config, **vars(self.cfg)})
 
-        eval_flag = False
         while self.step < self.cfg.num_train_steps:
             if self.step > 0 and self.step % self.cfg.eval_frequency == 0:
                 self.evaluate

@@ -113,7 +113,6 @@ class Workspace(object):
 
         self.step = self.cfg.num_pretrain
 
-        eval_flag = False
         while self.step < self.cfg.num_train_steps:
             if self.step > 0 and self.step % self.cfg.eval_frequency == 0:
                 self.evaluate
