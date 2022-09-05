@@ -116,7 +116,15 @@ class Workspace(object):
         eval_flag = False
         while self.step < self.cfg.num_train_steps:
             if self.step > 0 and self.step % self.cfg.eval_frequency == 0:
-                eval_flag = True
+                self.evaluate
+                print(
+                    f"Total T: {self.step + 1} Episode Num: {episode + 1} Episode T: {episode_step} Reward: {episode_reward:.3f}")
+                obs = self.env.reset()
+                self.agent.reset()
+                done = False
+                episode_reward = 0
+                episode_step = 0
+                episode += 1
 
             if self.cfg.wandb_name != "unnamed":
                 if self.step % self.cfg.eval_frequency == 0:
@@ -136,21 +144,6 @@ class Workspace(object):
                         }
                     }
                     wandb.log(wandb_logs)
-
-            if done:
-                # evaluate agent periodically
-                if eval_flag:
-
-                    self.evaluate
-                    eval_flag = False
-                print(
-                    f"Total T: {self.step + 1} Episode Num: {episode + 1} Episode T: {episode_step} Reward: {episode_reward:.3f}")
-                obs = self.env.reset()
-                self.agent.reset()
-                done = False
-                episode_reward = 0
-                episode_step = 0
-                episode += 1
 
             # sample action for data collection
             if self.step < self.cfg.num_seed_steps:

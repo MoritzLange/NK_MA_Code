@@ -104,14 +104,7 @@ class Workspace(object):
         eval_flag = False
         while self.step < self.cfg.num_train_steps:
             if self.step > 0 and self.step % self.cfg.eval_frequency == 0:
-                eval_flag = True
-
-            if done:
-                # evaluate agent periodically
-                if eval_flag:
-
-                    self.evaluate
-                    eval_flag = False
+                self.evaluate
                 print(
                     f"Total T: {self.step + 1} Episode Num: {episode + 1} Episode T: {episode_step} Reward: {episode_reward:.3f}")
                 obs = self.env.reset()
