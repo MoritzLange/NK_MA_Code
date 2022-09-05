@@ -32,7 +32,9 @@ class Workspace(object):
 
         utils.set_seed_everywhere(cfg.seed)
         self.device = torch.device(cfg.device)
+        cfg.agent.params.device = cfg.device
         cfg.agent.params.env_name = cfg.env
+        cfg.agent.params.num_layers = cfg.num_layers
         cfg.agent.params.aux_task = cfg.aux_task
         cfg.agent.params.total_units = cfg.total_units
         self.env = gym.make(cfg.env)
@@ -113,8 +115,11 @@ class Workspace(object):
 
         eval_flag = False
         while self.step < self.cfg.num_train_steps:
+            if self.step > 0 and self.step % self.cfg.eval_frequency == 0:
+                eval_flag = True
+
             if self.cfg.wandb_name != "unnamed":
-                if self.step % 500 == 0:
+                if self.step % self.cfg.eval_frequency == 0:
                     wandb_logs = {
                         "Reward": self.avg_rew,
                         "Step": self.step,
@@ -131,9 +136,6 @@ class Workspace(object):
                         }
                     }
                     wandb.log(wandb_logs)
-
-            if self.step > 0 and self.step % self.cfg.eval_frequency == 0:
-                eval_flag = True
 
             if done:
                 # evaluate agent periodically

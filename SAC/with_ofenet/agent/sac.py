@@ -24,7 +24,7 @@ class SACAgent(Agent):
                  actor_cfg, discount, init_temperature, alpha_lr, alpha_betas,
                  actor_lr, actor_betas, actor_update_frequency, critic_lr,
                  critic_betas, critic_tau, critic_target_update_frequency,
-                 batch_size, learnable_temperature, aux_task, env_name, total_units):
+                 batch_size, learnable_temperature, aux_task, env_name, total_units, num_layers):
         super().__init__()
 
         if env_name == "Humanoid-v2":
@@ -42,7 +42,13 @@ class SACAgent(Agent):
 
         if env_name == "HalfCheetah-v2" or env_name == "Humanoid-v2":
             num_layers = 8
+        elif env_name == "Hopper-v2":
+            num_layers = 6
+        elif env_name == "Pendulum-v1" or env_name == "MountainCarContinuous-v0":
+            num_layers = 2 # before I started logging this, I always used 2 here
         else:
+            # This is just here to preserve default behaviour,
+            # from before I added the elif statements
             num_layers = 6
 
         self.ofenet = OFENet(

@@ -99,19 +99,10 @@ class Workspace(object):
                 "seed": self.cfg.seed,
                 "batch_size": batch_size,
             }
-            wandb.init(project=self.cfg.wandb_name, entity=self.cfg.wandb_entity, config=config)
+            wandb.init(project=self.cfg.wandb_name, entity=self.cfg.wandb_entity, config={**config, **vars(self.cfg)})
 
         eval_flag = False
         while self.step < self.cfg.num_train_steps:
-            if self.cfg.wandb_name != "unnamed":
-                if self.step % 500 == 0:
-                    wandb_logs = {
-                        "Reward": self.avg_rew,
-                        "Step": self.step,
-
-                    }
-                    wandb.log(wandb_logs)
-
             if self.step > 0 and self.step % self.cfg.eval_frequency == 0:
                 eval_flag = True
 
@@ -129,6 +120,15 @@ class Workspace(object):
                 episode_reward = 0
                 episode_step = 0
                 episode += 1
+            
+            if self.cfg.wandb_name != "unnamed":
+                if self.step % self.cfg.eval_frequency == 0:
+                    wandb_logs = {
+                        "Reward": self.avg_rew,
+                        "Step": self.step,
+
+                    }
+                    wandb.log(wandb_logs)
 
             # sample action for data collection
             if self.step < self.cfg.num_seed_steps:
