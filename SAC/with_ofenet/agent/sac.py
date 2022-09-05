@@ -51,6 +51,8 @@ class SACAgent(Agent):
             # from before I added the elif statements
             num_layers = 6
 
+        self.device = torch.device(device)
+
         self.ofenet = OFENet(
             dim_state=obs_dim,
             dim_action=action_dim,
@@ -59,11 +61,11 @@ class SACAgent(Agent):
             num_layers=num_layers,
             aux_task=aux_task,
             env_name=env_name,
-            skip_action_branch=False
+            skip_action_branch=False,
+            device=self.device
         )
 
         self.action_range = action_range
-        self.device = torch.device(device)
         self.discount = discount
         self.critic_tau = critic_tau
         self.actor_update_frequency = actor_update_frequency
