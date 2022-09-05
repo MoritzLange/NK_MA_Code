@@ -1,4 +1,4 @@
-name: pytorch_sac
+name: sac
 channels:
   - defaults
 dependencies:
@@ -50,7 +50,7 @@ dependencies:
     - dm-control==0.0.364896371
     - dm-env==1.5
     - dm-tree==0.1.6
-    - dmc2gym==1.0.0
+    #- dmc2gym==1.0.0
     - docker-pycreds==0.4.0
     - fasteners==0.16.3
     - future==0.18.2
@@ -104,4 +104,4 @@ dependencies:
     - werkzeug==2.0.2
     - yaspin==2.1.0
     - zipp==3.6.0
-prefix: /home/noah/anaconda3/envs/pytorch_sac
+prefix: /home/noah/anaconda3/envs/sac
