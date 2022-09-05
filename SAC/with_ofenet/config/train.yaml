@@ -8,6 +8,7 @@ wandb_name: unnamed # wandb-project name
 wandb_entity: None # wandb team or user
 freeze_ofe: off # 
 pretrain: on # turn pretraining of ofenet on or off
+num_layers: 20
 total_units: 240 # total units added to representation per ofenet block
 
 # this needs to be specified manually

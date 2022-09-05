@@ -21,7 +21,7 @@ agent:
     critic_target_update_frequency: 1 # was 2
     batch_size: 256 # was 1024
     learnable_temperature: false
-    num_layers: 20
+    num_layers: ???
     aux_task: ???
     env_name: ???
     total_units: ???
