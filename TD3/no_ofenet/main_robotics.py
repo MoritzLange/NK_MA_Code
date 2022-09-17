@@ -74,8 +74,8 @@ if __name__ == "__main__":
     parser.add_argument("--start_timesteps", default=10e3, type=int)  # Time steps initial random policy is used
     parser.add_argument("--eval_freq", default=10e3, type=int)  # How often (time steps) we evaluate
     parser.add_argument("--max_timesteps", default=1e6, type=int)  # Max time steps to run environment
-    parser.add_argument("--expl_noise", default=0.1)  # Std of Gaussian exploration noise
-    parser.add_argument("--batch_size", default=128, type=int)  # Batch size for both actor and critic, old=100, new=256
+    parser.add_argument("--expl_noise", default=0.1, type=float)  # Std of Gaussian exploration noise
+    parser.add_argument("--batch_size", default=256, type=int)  # Batch size for both actor and critic, old=100, new=256
     parser.add_argument("--discount", default=0.99)  # Discount factor
     parser.add_argument("--tau", default=0.005)  # Target network update rate
     parser.add_argument("--policy_noise", default=0.2)  # Noise added to target policy during critic update
@@ -87,7 +87,7 @@ if __name__ == "__main__":
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--wandb_name", default="off")
     parser.add_argument("--wandb_entity", default=None)
-    parser.add_argument("--learning_rate", default="1e-4", type=float) # old = 1e-3, new = 3e-4
+    parser.add_argument("--learning_rate", default="3e-4", type=float) # old = 1e-3, new = 3e-4
     args = parser.parse_args()
 
     device = args.device
@@ -95,7 +95,6 @@ if __name__ == "__main__":
     env = ObservationWrapper(gym.make(args.env))
     dummy_env = ObservationWrapper(gym.make(args.env))
     dummy_env.reset()
-    # print(env.reset().shape)
 
     # Set seeds
     env.seed(args.seed)
@@ -143,13 +142,13 @@ if __name__ == "__main__":
             "learning_rate": args.learning_rate,
         }
 
-        wandb.init(project=args.wandb_name, entity=args.wandb_entity, config=config)
+        wandb.init(project=args.wandb_name, entity=args.wandb_entity, config={**config, **vars(args)})
     for t in range(int(args.max_timesteps)):
         start_time = time.time()
 
 
         if args.wandb_name != "off":
-            if t % 500 == 0:
+            if t % args.eval_freq == 0:
                 wandb_logs = {
                     "Reward": avg_rew,
                     "Success rate": sr,

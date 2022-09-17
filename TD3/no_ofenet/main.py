@@ -62,9 +62,9 @@ if __name__ == "__main__":
     parser.add_argument("--save_model", action="store_true")  # Save model and optimizer parameters
     parser.add_argument("--load_model", default="")  # Model load file name, "" doesn't load, "default" uses file_name
     parser.add_argument("--aux_task", default="no")
+    parser.add_argument("--device", default="cuda")
     parser.add_argument("--wandb_name", default="off")
     parser.add_argument("--wandb_entity", default=None)
-    parser.add_argument("--device", default="cuda")
     parser.add_argument("--learning_rate", default="3e-4", type=float) # old = 1e-3, new = 3e-4
     args = parser.parse_args()
 

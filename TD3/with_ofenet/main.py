@@ -105,7 +105,7 @@ if __name__ == "__main__":
     else:
         dim_target = get_target_dim(args.env)
 
-    if args.env == "HalfCheetah-v2" or args.env == "Humanoid-v2":
+    if args.env == "HalfCheetah-v2" or args.env == "Humanoid-v2" or args.env == "FetchSlideDense-v1":
         num_layers = 8
     elif args.env == "Hopper-v2":
         num_layers = 6

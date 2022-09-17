@@ -88,7 +88,7 @@ if __name__ == "__main__":
     parser.add_argument("--pretrain_steps", default=10e3, type=int) # pretrain steps for ofenet
     parser.add_argument("--eval_freq", default=10e3, type=int)  # How often (time steps) we evaluate
     parser.add_argument("--max_timesteps", default=1e6, type=int)  # Max time steps to run environment
-    parser.add_argument("--expl_noise", default=0.1)  # Std of Gaussian exploration noise
+    parser.add_argument("--expl_noise", default=0.1, type=float)  # Std of Gaussian exploration noise
     parser.add_argument("--batch_size", default=256, type=int)  # Batch size for both actor and critic, old=100, new=256
     parser.add_argument("--discount", default=0.99)  # Discount factor
     parser.add_argument("--tau", default=0.005)  # Target network update rate
@@ -129,7 +129,13 @@ if __name__ == "__main__":
 
     if args.env == "HalfCheetah-v2" or args.env == "Humanoid-v2" or args.env == "FetchSlideDense-v1":
         num_layers = 8
+    elif args.env == "Hopper-v2":
+        num_layers = 6
+    elif args.env == "Pendulum-v1" or args.env == "MountainCarContinuous-v0":
+        num_layers = 2 # before I started logging this, I always used 2 here
     else:
+        # This is just here to preserve default behaviour,
+        # from before I added the elif statements
         num_layers = 6
 
     total_units = args.total_units
@@ -184,15 +190,16 @@ if __name__ == "__main__":
             "seed": args.seed,
             "batch_size": args.batch_size,
             "learning_rate": args.learning_rate,
+            "num_layers": num_layers
         }
 
-        wandb.init(project=args.wandb_name, entity=args.wandb_entity, config=config)
+        wandb.init(project=args.wandb_name, entity=args.wandb_entity, config={**config, **vars(args)})
 
     for t in range(int(args.max_timesteps)):
 
         # wandb logging
         if args.wandb_name != "off":
-            if t % 500 == 0:
+            if t % args.eval_freq == 0:
                 wandb_logs = {
                     "Reward": avg_rew,
                     "Success rate": sr,
