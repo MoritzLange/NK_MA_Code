@@ -19,7 +19,7 @@ replay_buffer_capacity: ${num_train_steps}
 num_seed_steps: 10000 # steps before starting agent training (collecting random samples)
 
 eval_frequency: 10000 # how often to evaluate
-num_eval_episodes: 10
+num_eval_episodes: 100
 
 device: cuda
 

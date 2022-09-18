@@ -137,9 +137,10 @@ class Workspace(object):
         self.agent.pretrain_ofe(self.env, self.replay_buffer, random_collect=self.cfg.num_pretrain, batch_size=batch_size)
 
         self.step = self.cfg.num_pretrain
+        obs = self.env.reset()
 
         while self.step < self.cfg.num_train_steps:
-            if self.step > 0 and self.step % self.cfg.eval_frequency == 0:
+            if self.step >= 0 and self.step % self.cfg.eval_frequency == 0:
                 self.evaluate
                 print(
                     f"Total T: {self.step + 1} Episode Num: {episode + 1} Episode T: {episode_step} Reward: {episode_reward:.3f}")
