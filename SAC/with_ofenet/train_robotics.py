@@ -80,10 +80,10 @@ class Workspace(object):
 
         average_episode_reward = 0
         count = 0
-        # evaluate_buffer = ReplayBuffer(self.env.observation_space.shape,
-        #                                self.env.action_space.shape,
-        #                                int(self.cfg.replay_buffer_capacity),
-        #                                self.device)
+        evaluate_buffer = ReplayBuffer(self.env.observation_space.shape,
+                                       self.env.action_space.shape,
+                                       int(self.cfg.replay_buffer_capacity),
+                                       self.device)
         success_counter = 0
         for episode in range(self.cfg.num_eval_episodes):
             obs = self.env.reset()
@@ -96,7 +96,7 @@ class Workspace(object):
                 with utils.eval_mode(self.agent):
                     action = self.agent.act(obs, sample=False)
                 obs, reward, done, info = self.env.step(action)
-                # evaluate_buffer.add(state, action, reward, obs, done, done)
+                evaluate_buffer.add(state, action, reward, obs, done, done)
                 if info["is_success"]:
                     success = True
                 episode_reward += reward
@@ -105,7 +105,8 @@ class Workspace(object):
             average_episode_reward += episode_reward
             if success:
                 success_counter += 1
-            
+        
+        self.agent.ofenet.test_ofe(evaluate_buffer.obses, evaluate_buffer.actions, evaluate_buffer.next_obses, evaluate_buffer.rewards, None)
         self.success_rate = success_counter/self.cfg.num_eval_episodes
         average_episode_reward /= self.cfg.num_eval_episodes
         self.avg_rew = average_episode_reward
